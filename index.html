@@ -39,9 +39,17 @@
   #intro.gone{opacity:0;pointer-events:none}
   .iscene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s;padding:0 26px;text-align:center}
   .iscene.on{opacity:1}
-  #introIcon{width:66px;height:66px;border-radius:18px;margin-bottom:16px;box-shadow:0 14px 30px rgba(255,122,26,.35);transform:scale(.6);opacity:0}
+  #introIcon{width:66px;height:66px;border-radius:18px;margin-bottom:14px;box-shadow:0 14px 30px rgba(255,122,26,.35);transform:scale(.6);opacity:0}
   #introIcon.in{animation:iconpop .5s cubic-bezier(.2,1.5,.4,1) forwards}
   @keyframes iconpop{to{opacity:1;transform:scale(1)}}
+  /* myth -> reality contrast device: gives the hook a visible "before/after" shape, not just
+     a headline swap */
+  #claimTag{display:inline-block;padding:4px 13px;border-radius:20px;font-size:10.5px;font-weight:900;
+    letter-spacing:1.5px;margin-bottom:11px;opacity:0;transform:scale(.85);transition:background .3s,border-color .3s,color .3s}
+  #claimTag.in{animation:tagpop .35s cubic-bezier(.2,1.5,.4,1) forwards}
+  @keyframes tagpop{to{opacity:1;transform:scale(1)}}
+  #claimTag.myth{background:rgba(255,92,92,.14);border:1px solid rgba(255,92,92,.45);color:#FF8A8A}
+  #claimTag.reality{background:rgba(124,255,92,.16);border:1px solid rgba(124,255,92,.5);color:#7CFF5C}
   #introH{color:#fff;font-size:clamp(22px,6.6vw,27px);font-weight:900;line-height:1.24;opacity:0;transform:translateY(10px)}
   #introH.in{animation:textup .45s forwards}
   @keyframes textup{to{opacity:1;transform:translateY(0)}}
@@ -108,8 +116,11 @@
     display:flex;align-items:center;justify-content:center;box-shadow:0 16px 34px rgba(198,84,26,.5);position:relative}
   .pdfIcon::before{content:'';position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 16px 16px 0;border-color:transparent #fff transparent transparent;opacity:.85}
   .pdfIcon span{color:#fff;font-size:15px;font-weight:900}
-  .pdfLabel{color:#7CFF5C;font-size:15px;font-weight:900;margin-top:10px;white-space:nowrap}
-  .pdfSub{color:#FFC98A;font-size:11px;font-weight:700;margin-top:4px}
+  .winBadge{background:rgba(124,255,92,.16);border:1px solid rgba(124,255,92,.5);color:#7CFF5C;
+    font-size:10.5px;font-weight:900;letter-spacing:1px;padding:5px 13px;border-radius:20px;margin-bottom:9px;white-space:nowrap}
+  .timeStat{color:#fff;font-size:30px;font-weight:900;margin-top:9px;white-space:nowrap;text-shadow:0 0 22px rgba(255,154,61,.4)}
+  .timeStat b{color:#FF9A3D}
+  .pdfLabel{color:#FFC98A;font-size:11.5px;font-weight:700;margin-top:3px;white-space:nowrap}
 
   .spark{position:fixed;border-radius:50%;pointer-events:none;z-index:60}
 
@@ -163,16 +174,18 @@
         <div class="bigTapHint" id="bigTapHint"><div class="tapcircle">👆</div><span>TAP NOW</span></div>
       </div>
       <div class="pdfResult" id="pdfResult">
+        <div class="winBadge">🏆 CHALLENGE WON</div>
         <div class="pdfIcon"><span>PDF</span></div>
-        <div class="pdfLabel" id="pdfLabel">⚡ Scanned instantly</div>
-        <div class="pdfSub">that's the real speed</div>
+        <div class="timeStat"><b id="timeNum">0.6</b>s</div>
+        <div class="pdfLabel">real scan, no trick</div>
       </div>
     </div>
 
     <div id="intro">
       <div class="iscene on" id="sc1">
         <div id="introIcon"></div>
-        <div id="introH">Think scanning takes <em>forever</em>? ⏱️</div>
+        <div id="claimTag" class="myth">MYTH</div>
+        <div id="introH">Scanning takes <em>forever</em> ⏱️</div>
         <div id="introSub">Tap the paper. Watch the clock. Judge for yourself.</div>
       </div>
       <button class="startbtn" id="startBtn">🔥 Take the challenge</button>
@@ -261,7 +274,7 @@ function tapScan(){ if(scanned) return; scanned=true;
     $('ttitle').textContent='Turning it into a file…';
   },600);
   T(()=>{ w.classList.add('shrink'); sfxScan(); },1250);
-  T(()=>{ $('pdfResult').classList.add('show'); sfxWin(); $('ttitle').textContent='That fast. Really.'; },1650);
+  T(()=>{ $('pdfResult').classList.add('show'); sfxWin(); $('ttitle').textContent='You just beat the clock 🏆'; },1650);
   T(finishTrial,3800);
 }
 function finishTrial(){ showEnd(); }
@@ -325,9 +338,13 @@ $('introIcon').innerHTML = APP_ICON;
 $('endIcon').innerHTML = APP_ICON;
 $('docImgBefore').src = DOC_BEFORE_IMG; $('docImgAfter').src = DOC_AFTER_IMG;
 T(()=>$('introIcon').classList.add('in'),150);
+T(()=>$('claimTag').classList.add('in'),300);
 T(()=>$('introH').classList.add('in'),350);
-T(()=>{ const h=$('introH'); h.classList.remove('in'); void h.offsetWidth;
-  h.innerHTML="We'll prove it <em>wrong</em> ⚡"; h.classList.add('in'); },1650);
+T(()=>{
+  const tag=$('claimTag'); tag.classList.remove('myth'); tag.classList.add('reality'); tag.textContent='REALITY';
+  const h=$('introH'); h.classList.remove('in'); void h.offsetWidth;
+  h.innerHTML="3 seconds. <em>We'll prove it.</em> ⚡"; h.classList.add('in');
+},1650);
 T(()=>$('introSub').classList.add('in'),2050);
 T(()=>$('startBtn').classList.add('show'),2500);
 T(dismissIntro,5200);
